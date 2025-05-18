@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 
-// Your DeepSeek API key - replace this with your actual API key
-const OPENROUTER_API_KEY = "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"
+// Hard-coded OpenRouter API key as it was in the original working version
+const API_KEY = "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"
 
 export async function POST(request: Request) {
   try {
@@ -41,14 +41,12 @@ export async function POST(request: Request) {
       fullPrompt += `\n\nPlease provide unique content that is different from previous responses. Avoid generating content that would result in these hashes: ${topicHistory.join(", ")}`
     }
 
-    // Call OpenRouter API
+    // Call OpenRouter API with direct curl-equivalent fetch
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-        "HTTP-Referer": "https://dailydose.vercel.app", 
-        "X-Title": "Daily Dose of Knowledge"
+        "Authorization": `Bearer ${API_KEY}`,
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
         model: "deepseek/deepseek-prover-v2:free",
@@ -68,15 +66,26 @@ export async function POST(request: Request) {
       }),
     })
 
+    // Better error handling
     if (!response.ok) {
-      const errorData = await response.json()
-      return NextResponse.json(
-        { error: errorData.error?.message || "Failed to generate content" },
-        { status: response.status },
-      )
+      console.error(`OpenRouter API responded with status ${response.status}`)
+      let errorMessage = "Failed to generate content"
+      try {
+        const errorData = await response.json()
+        console.error("API Error Details:", JSON.stringify(errorData))
+        errorMessage = errorData.error?.message || errorMessage
+      } catch (e) {
+        console.error("Failed to parse error response:", e)
+      }
+      return NextResponse.json({ error: errorMessage }, { status: response.status })
     }
 
     const data = await response.json()
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.error("Invalid API response structure:", data)
+      return NextResponse.json({ error: "Invalid response from AI service" }, { status: 500 })
+    }
+
     return NextResponse.json({ content: data.choices[0].message.content.trim() })
   } catch (error) {
     console.error("Error generating content:", error)
