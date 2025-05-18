@@ -5,6 +5,8 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 
 interface KnowledgeCardProps {
   id: string
@@ -63,12 +65,22 @@ export default function KnowledgeCard({ id, topic, promptType, content, error, o
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         ) : (
-          <div className="prose prose-sm dark:prose-invert max-w-none">
-            {content.split("\n").map((paragraph, index) => (
-              <p key={index} className="mb-2 text-sm">
-                {paragraph}
-              </p>
-            ))}
+          <div className="prose prose-sm max-w-none 
+            prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-gray-100
+            prose-h1:text-lg prose-h2:text-base prose-h3:text-sm
+            prose-p:text-sm prose-p:my-2
+            prose-a:text-blue-600 dark:prose-a:text-blue-400
+            prose-strong:font-bold
+            prose-em:italic
+            prose-code:bg-gray-100 dark:prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs
+            prose-ul:list-disc prose-ul:ml-4 prose-ol:list-decimal prose-ol:ml-4
+            prose-li:mb-1 prose-li:text-sm
+            prose-blockquote:border-l-4 prose-blockquote:border-gray-200 dark:prose-blockquote:border-gray-700
+            prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:my-2
+            dark:prose-invert">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {content}
+            </ReactMarkdown>
           </div>
         )}
       </CardContent>
