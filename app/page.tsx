@@ -8,6 +8,7 @@ import KnowledgeCards from "@/components/knowledge-cards"
 import { getStoredTopics } from "@/lib/storage"
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/ui/use-toast"
+import StreakCounter from "@/components/StreakCounter"
 
 export default function Home() {
   const [topics, setTopics] = useState<string[]>([])
@@ -51,6 +52,7 @@ export default function Home() {
                 </svg>
                 <span className="text-sm">Learn something new every day</span>
               </div>
+              <StreakCounter />
               <ModeToggle />
             </div>
           </div>

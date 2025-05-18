@@ -1,3 +1,7 @@
+"use client"
+
+import StreakCounter from "./StreakCounter"
+
 export default function Header() {
     return (
       <header className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-8 px-4 shadow-md">
@@ -7,7 +11,7 @@ export default function Header() {
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Daily Dose of Knowledge</h1>
               <p className="text-blue-100">Your personal learning tutor with bite-sized knowledge</p>
             </div>
-            <div className="mt-4 md:mt-0">
+            <div className="mt-4 md:mt-0 flex items-center gap-3">
               <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -23,6 +27,7 @@ export default function Header() {
                 </svg>
                 <span className="text-sm">Learn something new every day</span>
               </div>
+              <StreakCounter />
             </div>
           </div>
         </div>
