@@ -1,11 +1,19 @@
 import { NextResponse } from "next/server"
+import { GoogleGenAI } from "@google/genai"
 
-// Hard-coded OpenRouter API key as it was in the original working version
-const API_KEY = "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"
+// Use the specific Google API key environment variable
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || process.env.API_KEY
 
 export async function POST(request: Request) {
   try {
+    // Validate API key
+    if (!GOOGLE_API_KEY) {
+      console.error("Google Gemini API key is missing")
+      return NextResponse.json({ error: "API key not configured" }, { status: 500 })
+    }
+    
     const { topic, promptType, topicHistory } = await request.json()
+    console.log("Request received:", { topic, promptType })
 
     // Get the prompt template based on the prompt type
     const promptIndex = getPromptIndexFromType(promptType)
@@ -41,54 +49,46 @@ export async function POST(request: Request) {
       fullPrompt += `\n\nPlease provide unique content that is different from previous responses. Avoid generating content that would result in these hashes: ${topicHistory.join(", ")}`
     }
 
-    // Call OpenRouter API with direct curl-equivalent fetch
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "deepseek/deepseek-prover-v2:free",
-        messages: [
-          {
-            role: "system",
-            content:
-              "You are a knowledgeable tutor providing concise, accurate, and engaging educational content. Keep responses focused and under 300 words.",
-          },
-          {
-            role: "user",
-            content: fullPrompt,
-          },
-        ],
-        temperature: 0.7,
-        max_tokens: 500,
-      }),
-    })
-
-    // Better error handling
-    if (!response.ok) {
-      console.error(`OpenRouter API responded with status ${response.status}`)
-      let errorMessage = "Failed to generate content"
-      try {
-        const errorData = await response.json()
-        console.error("API Error Details:", JSON.stringify(errorData))
-        errorMessage = errorData.error?.message || errorMessage
-      } catch (e) {
-        console.error("Failed to parse error response:", e)
+    try {
+      console.log("Initializing Google GenAI...")
+      // Initialize with the correct API key
+      const genAI = new GoogleGenAI({ apiKey: GOOGLE_API_KEY })
+      
+      // Simple prompt for Gemini
+      console.log("Calling Gemini API...")
+      const result = await genAI.models.generateContent({
+        model: "gemini-2.0-flash",
+        contents: fullPrompt
+      })
+      
+      if (!result || !result.text) {
+        console.error("Empty response from Gemini API")
+        return NextResponse.json({ error: "No content generated" }, { status: 500 })
       }
-      return NextResponse.json({ error: errorMessage }, { status: response.status })
-    }
 
-    const data = await response.json()
-    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-      console.error("Invalid API response structure:", data)
-      return NextResponse.json({ error: "Invalid response from AI service" }, { status: 500 })
+      return NextResponse.json({ content: result.text.trim() })
+    } catch (apiError: any) {
+      console.error("API call error details:", 
+        apiError?.message || "Unknown API error"
+      )
+      
+      // Check for specific API key errors
+      const errorMessage = apiError?.message || "";
+      if (errorMessage.includes("API key not valid") || errorMessage.includes("INVALID_ARGUMENT")) {
+        console.error("API KEY INVALID - Check your GOOGLE_API_KEY environment variable")
+        return NextResponse.json({ 
+          error: "Invalid API key. Please configure a valid Google API key." 
+        }, { status: 401 })
+      }
+      
+      return NextResponse.json({ 
+        error: `Gemini API error: ${apiError?.message || "Unknown error"}` 
+      }, { status: 500 })
     }
-
-    return NextResponse.json({ content: data.choices[0].message.content.trim() })
-  } catch (error) {
-    console.error("Error generating content:", error)
+  } catch (error: any) {
+    console.error("Error generating content:", 
+      error?.message || "Unknown error"
+    )
     return NextResponse.json({ error: "Failed to generate content" }, { status: 500 })
   }
 }
