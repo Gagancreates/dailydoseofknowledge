@@ -65,13 +65,13 @@ export async function POST(request: Request) {
       }
 
       return NextResponse.json({ content: result.text.trim() })
-    } catch (apiError: any) {
+    } catch (apiError: Error | unknown) {
       console.error("API call error details:", 
-        apiError?.message || "Unknown API error"
+        apiError instanceof Error ? apiError.message : "Unknown API error"
       )
       
       // Check for specific API key errors
-      const errorMessage = apiError?.message || "";
+      const errorMessage = apiError instanceof Error ? apiError.message : "";
       if (errorMessage.includes("API key not valid") || errorMessage.includes("INVALID_ARGUMENT")) {
         console.error("API KEY INVALID - Check your GOOGLE_API_KEY environment variable")
         return NextResponse.json({ 
@@ -80,12 +80,12 @@ export async function POST(request: Request) {
       }
       
       return NextResponse.json({ 
-        error: `Gemini API error: ${apiError?.message || "Unknown error"}` 
+        error: `Gemini API error: ${apiError instanceof Error ? apiError.message : "Unknown error"}` 
       }, { status: 500 })
     }
-  } catch (error: any) {
+  } catch (error: Error | unknown) {
     console.error("Error generating content:", 
-      error?.message || "Unknown error"
+      error instanceof Error ? error.message : "Unknown error"
     )
     return NextResponse.json({ error: "Failed to generate content" }, { status: 500 })
   }

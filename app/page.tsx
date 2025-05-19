@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useTheme } from "next-themes"
 import { ModeToggle } from "@/components/mode-toggle"
 import TopicManager from "@/components/topic-manager"
 import KnowledgeCards from "@/components/knowledge-cards"
