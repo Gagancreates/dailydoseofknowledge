@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { getPrompts } from "@/lib/prompts"
 import { getTopicHistory, saveTopicHistory } from "@/lib/storage"
 import { createHash } from "@/lib/utils"
@@ -29,83 +29,75 @@ export default function KnowledgeCards({ topics }: KnowledgeCardsProps) {
   const [isGenerating, setIsGenerating] = useState(false)
   const { toast } = useToast()
 
-  const generateAllContent = async () => {
+  const generateAllContent = useCallback(async () => {
     if (isGenerating) return
     setIsGenerating(true)
 
-    // Clear existing items
-    setKnowledgeItems([])
+    try {
+      // Create all placeholder items first
+      const newItems: KnowledgeItem[] = topics.flatMap(topic => {
+        const promptCount = Math.floor(Math.random() * 2) + 2 // 2 or 3
+        const prompts = getPrompts(topic, promptCount)
+        return prompts.map((prompt, index) => ({
+          id: `${topic}-${Date.now()}-${index}`,
+          topic,
+          promptType: prompt.type,
+          content: "",
+          isLoading: true,
+        }))
+      })
 
-    // Generate new content for each topic
-    const newItems: KnowledgeItem[] = []
+      // Set all items at once
+      setKnowledgeItems(newItems)
 
-    for (const topic of topics) {
-      // Get 2-3 random prompts for this topic
-      const promptCount = Math.floor(Math.random() * 2) + 2 // 2 or 3
-      const prompts = getPrompts(topic, promptCount)
+      // Generate content for each item sequentially
+      for (const item of newItems) {
+        try {
+          const topicHistory = getTopicHistory(item.topic)
+          const content = await generateContent(item.topic, item.promptType, topicHistory)
+          const contentHash = createHash(content)
+          saveTopicHistory(item.topic, contentHash)
 
-      // Create placeholder items
-      const topicItems = prompts.map((prompt, index) => ({
-        id: `${topic}-${Date.now()}-${index}`,
-        topic,
-        promptType: prompt.type,
-        content: "",
-        isLoading: true,
-      }))
-
-      newItems.push(...topicItems)
-    }
-
-    setKnowledgeItems(newItems)
-
-    // Generate content for each item
-    for (const item of newItems) {
-      try {
-        const topicHistory = getTopicHistory(item.topic)
-        const content = await generateContent(item.topic, item.promptType, topicHistory)
-
-        // Create hash of the content to avoid duplicates
-        const contentHash = createHash(content)
-
-        // Save hash to history
-        saveTopicHistory(item.topic, contentHash)
-
-        // Update the item with content
-        setKnowledgeItems((prev) =>
-          prev.map((prevItem) => (prevItem.id === item.id ? { ...prevItem, content, isLoading: false } : prevItem)),
-        )
-      } catch (error) {
-        console.error(`Error generating content for ${item.topic}:`, error)
-        setKnowledgeItems((prev) =>
-          prev.map((prevItem) =>
-            prevItem.id === item.id
-              ? {
-                  ...prevItem,
-                  isLoading: false,
-                  error: error instanceof Error ? error.message : "Failed to generate content",
-                }
-              : prevItem,
-          ),
-        )
-
-        toast({
-          variant: "destructive",
-          title: "Error generating content",
-          description: error instanceof Error ? error.message : "Failed to generate content",
-        })
+          setKnowledgeItems(prev => 
+            prev.map(prevItem => 
+              prevItem.id === item.id 
+                ? { ...prevItem, content, isLoading: false }
+                : prevItem
+            )
+          )
+        } catch (error) {
+          console.error(`Error generating content for ${item.topic}:`, error)
+          setKnowledgeItems(prev =>
+            prev.map(prevItem =>
+              prevItem.id === item.id
+                ? {
+                    ...prevItem,
+                    isLoading: false,
+                    error: error instanceof Error ? error.message : "Failed to generate content",
+                  }
+                : prevItem
+            )
+          )
+        }
       }
+    } catch (error) {
+      console.error("Error in generateAllContent:", error)
+      toast({
+        variant: "destructive",
+        title: "Error generating content",
+        description: error instanceof Error ? error.message : "Failed to generate content",
+      })
+    } finally {
+      setIsGenerating(false)
     }
+  }, [topics, isGenerating, toast])
 
-    setIsGenerating(false)
-  }
-
+  // Only run on initial mount or when topics change
   useEffect(() => {
-    if (topics.length > 0) {
+    if (topics.length > 0 && knowledgeItems.length === 0) {
       generateAllContent()
-    } else {
-      setKnowledgeItems([])
     }
-  }, [topics, generateAllContent])
+  }, [topics, generateAllContent, knowledgeItems.length])
 
   const refreshCard = async (itemId: string) => {
     // Find the item to refresh
