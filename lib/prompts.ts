@@ -1,7 +1,7 @@
 // Prompt templates as provided
 const promptTemplates = [
     (topic: string) =>
-      `You're a senior mentor. Teach one underrated but powerful concept in ${topic}. Explain it with a real-world analogy.`,
+      `Teach one underrated but powerful concept in ${topic}. Explain it with a real-world analogy.`,
     (topic: string) =>
       `Ask a challenging conceptual MCQ in ${topic}. Give 4 options, the correct answer, and a short explanation.`,
     (topic: string) =>
@@ -10,7 +10,7 @@ const promptTemplates = [
     (topic: string) =>
       `Share a bite-sized historical story, origin, or fun fact about ${topic} that deepens understanding.`,
     (topic: string) => `Create a "what if?" scenario in ${topic} and walk the learner through the outcome.`,
-    (topic: string) => `Give a pro tip or trick in ${topic} that most beginners miss. Explain clearly.`,
+    (topic: string) => `Give a pro tip or trick in ${topic} that most people miss. Explain clearly.`,
     (topic: string) => `Explain a technical term in ${topic} in simple language. Give examples.`,
     (topic: string) =>
       `Pose a mini quiz: "Did you know?" in ${topic} with yes/no or fill-in-the-blank. Then explain the answer.`,
