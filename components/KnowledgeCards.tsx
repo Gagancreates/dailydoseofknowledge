@@ -26,14 +26,6 @@ export default function KnowledgeCards({ topics, apiKey }: KnowledgeCardsProps) 
   const [knowledgeItems, setKnowledgeItems] = useState<KnowledgeItem[]>([])
   const [isGenerating, setIsGenerating] = useState(false)
 
-  useEffect(() => {
-    if (topics.length > 0 && apiKey) {
-      generateAllContent()
-    } else {
-      setKnowledgeItems([])
-    }
-  }, [topics, apiKey])
-
   const generateAllContent = async () => {
     if (isGenerating || !apiKey) return
     setIsGenerating(true)
@@ -97,6 +89,14 @@ export default function KnowledgeCards({ topics, apiKey }: KnowledgeCardsProps) 
 
     setIsGenerating(false)
   }
+
+  useEffect(() => {
+    if (topics.length > 0 && apiKey) {
+      generateAllContent()
+    } else {
+      setKnowledgeItems([])
+    }
+  }, [topics, apiKey, generateAllContent])
 
   const refreshCard = async (itemId: string) => {
     // Find the item to refresh

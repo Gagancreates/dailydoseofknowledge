@@ -69,7 +69,7 @@ export default function TopicManager({ topics, setTopics, onComplete }: TopicMan
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <div>
           <CardTitle className="text-2xl font-bold">Manage Your Learning Topics</CardTitle>
-          <CardDescription>Add topics you're interested in learning about</CardDescription>
+          <CardDescription>Add topics you&apos;re interested in learning about</CardDescription>
         </div>
         {topics.length > 0 && onComplete && (
           <Button onClick={onComplete} className="ml-auto">

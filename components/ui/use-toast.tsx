@@ -1,7 +1,7 @@
 "use client"
 
 // Adapted from shadcn/ui toast to work with sonner
-import { toast as sonnerToast, type ToastT } from "sonner"
+import { toast as sonnerToast } from "sonner"
 
 // Define types similar to shadcn/ui toast
 type ToastProps = {

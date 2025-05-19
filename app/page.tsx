@@ -14,7 +14,6 @@ export default function Home() {
   const [topics, setTopics] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [showTopicManager, setShowTopicManager] = useState<boolean>(false)
-  const { theme } = useTheme()
   const { toast } = useToast()
 
   useEffect(() => {
