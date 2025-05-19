@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { PlusCircle, X, Check } from "lucide-react"
+import { PlusCircle, X, Check, BookOpen } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
 interface TopicManagerProps {
@@ -22,22 +22,25 @@ export default function TopicManager({ topics, setTopics, onComplete }: TopicMan
   const [error, setError] = useState("")
 
   const handleAddTopic = () => {
-    if (!newTopic.trim()) {
+    const trimmedTopic = newTopic.trim()
+    if (!trimmedTopic) {
       setError("Please enter a topic")
       return
     }
-
-    // Check if topic already exists
-    if (topics.includes(newTopic.trim())) {
-      setError("This topic already exists!")
+    if (topics.includes(trimmedTopic)) {
+      setError("This topic already exists")
+      return
+    }
+    if (topics.length >= 5) {
+      setError("You can add up to 5 topics")
       return
     }
 
-    setError("")
-    const updatedTopics = [...topics, newTopic.trim()]
+    const updatedTopics = [...topics, trimmedTopic]
     setTopics(updatedTopics)
     saveTopics(updatedTopics)
     setNewTopic("")
+    setError("")
   }
 
   const handleRemoveTopic = (topicToRemove: string) => {
@@ -46,7 +49,7 @@ export default function TopicManager({ topics, setTopics, onComplete }: TopicMan
     saveTopics(updatedTopics)
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault()
       handleAddTopic()
@@ -66,13 +69,18 @@ export default function TopicManager({ topics, setTopics, onComplete }: TopicMan
 
   return (
     <Card className="border shadow-lg">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-        <div>
-          <CardTitle className="text-2xl font-bold">Manage Your Learning Topics</CardTitle>
-          <CardDescription>Add topics you&apos;re interested in learning about</CardDescription>
+      <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0 pb-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-primary/10 rounded-lg">
+            <BookOpen className="h-5 w-5 text-primary" />
+          </div>
+          <div>
+            <CardTitle className="text-xl sm:text-2xl font-bold">Manage Your Learning Topics</CardTitle>
+            <CardDescription className="text-sm sm:text-base mt-1">Add topics you&apos;re interested in learning about</CardDescription>
+          </div>
         </div>
         {topics.length > 0 && onComplete && (
-          <Button onClick={onComplete} className="ml-auto">
+          <Button onClick={onComplete} className="w-full sm:w-auto bg-primary hover:bg-primary/90">
             <Check className="mr-2 h-4 w-4" />
             Done
           </Button>
@@ -80,27 +88,33 @@ export default function TopicManager({ topics, setTopics, onComplete }: TopicMan
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-4">
-          <div className="flex gap-2">
-            <Input
-              type="text"
-              value={newTopic}
-              onChange={(e) => {
-                setNewTopic(e.target.value)
-                setError("")
-              }}
-              onKeyDown={handleKeyDown}
-              placeholder="Add a new topic (e.g., Machine Learning, React)"
-              className="flex-1"
-            />
-            <Button onClick={handleAddTopic}>
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Add Topic
-            </Button>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <div className="relative flex-1">
+              <Input
+                type="text"
+                value={newTopic}
+                onChange={(e) => {
+                  setNewTopic(e.target.value)
+                  setError("")
+                }}
+                onKeyDown={handleKeyDown}
+                placeholder="Add a new topic (e.g., Machine Learning, React)"
+                className="flex-1 text-sm sm:text-base pr-24"
+              />
+              <Button 
+                onClick={handleAddTopic} 
+                className="absolute right-1 top-1 h-8 px-3 text-xs sm:text-sm"
+                size="sm"
+              >
+                <PlusCircle className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
+                Add
+              </Button>
+            </div>
           </div>
 
           {error && (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
+            <Alert variant="destructive" className="py-2">
+              <AlertDescription className="text-sm">{error}</AlertDescription>
             </Alert>
           )}
 
@@ -112,7 +126,7 @@ export default function TopicManager({ topics, setTopics, onComplete }: TopicMan
                   <Badge
                     key={topic}
                     variant="outline"
-                    className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+                    className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors px-3 py-1.5"
                     onClick={() => {
                       if (!topics.includes(topic)) {
                         const updatedTopics = [...topics, topic]
@@ -132,16 +146,19 @@ export default function TopicManager({ topics, setTopics, onComplete }: TopicMan
           )}
 
           {topics.length > 0 && (
-            <div className="mt-4">
-              <h3 className="text-lg font-medium mb-3">Your Topics:</h3>
+            <div className="mt-2">
+              <p className="text-sm text-muted-foreground mb-3">Your selected topics:</p>
               <div className="flex flex-wrap gap-2">
                 {topics.map((topic) => (
-                  <Badge key={topic} variant="secondary" className="flex items-center gap-1 px-3 py-1.5">
-                    <span>{topic}</span>
+                  <Badge
+                    key={topic}
+                    variant="secondary"
+                    className="px-3 py-1.5 text-sm flex items-center gap-1.5 bg-primary/10 hover:bg-primary/20 transition-colors"
+                  >
+                    {topic}
                     <button
                       onClick={() => handleRemoveTopic(topic)}
-                      className="ml-1 text-muted-foreground hover:text-foreground rounded-full"
-                      aria-label={`Remove ${topic}`}
+                      className="ml-1 hover:text-destructive transition-colors p-0.5 rounded-full hover:bg-destructive/10"
                     >
                       <X className="h-3 w-3" />
                     </button>
