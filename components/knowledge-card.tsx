@@ -28,7 +28,6 @@ export default function KnowledgeCard({ id, topic, promptType, content, error, o
       "Historical Insight": "secondary",
       "What If Scenario": "outline",
       "Pro Tip": "default",
-      "Resource Recommendation": "secondary",
       "Technical Term": "outline",
       "Mini Quiz": "default",
     }

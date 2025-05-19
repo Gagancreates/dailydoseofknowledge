@@ -11,8 +11,6 @@ const promptTemplates = [
       `Share a bite-sized historical story, origin, or fun fact about ${topic} that deepens understanding.`,
     (topic: string) => `Create a "what if?" scenario in ${topic} and walk the learner through the outcome.`,
     (topic: string) => `Give a pro tip or trick in ${topic} that most beginners miss. Explain clearly.`,
-    (topic: string) =>
-      `Recommend an excellent learning resource (video, article, or GitHub) for ${topic}. Summarize it briefly.`,
     (topic: string) => `Explain a technical term in ${topic} in simple language. Give examples.`,
     (topic: string) =>
       `Pose a mini quiz: "Did you know?" in ${topic} with yes/no or fill-in-the-blank. Then explain the answer.`,
@@ -27,7 +25,6 @@ const promptTemplates = [
     "Historical Insight",
     "What If Scenario",
     "Pro Tip",
-    "Resource Recommendation",
     "Technical Term",
     "Mini Quiz",
   ]
