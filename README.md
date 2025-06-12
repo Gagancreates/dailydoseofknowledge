@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Daily Dose of Knowledge
+[check it out](https://dailydoseofknowledge.vercel.app/)
+> **something which I built out to address doom-scrolling and replace it with micro learning**
 
-## Getting Started
+![Image](https://github.com/user-attachments/assets/7f4835fe-ea49-47f6-8991-3e3a15c34da1)
 
-First, run the development server:
+![Image](https://github.com/user-attachments/assets/81633cb4-8fae-4c0c-9228-26b6ac81f56d)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+I got tired of opening my phone to learn something and ending up watching random ahh videos. Built this so I actually learn something in my free time rather than scrolling off.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Perfect for micro-learning - just 5-10 minutes a day, but it actually sticks because you choose exactly what you want to learn about.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## What You Get
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Choose your topics → get bite-sized knowledge cards every day:
 
-## Learn More
+- **Quick articles** - 3-5 minute reads on what you care about
+- **Micro-questions** - Make you actually think about what you just learned
+- **Resource recommendation** - books or courses to help dwelve deeper
 
-To learn more about Next.js, take a look at the following resources:
+Plus streaks that actually motivate you. All personalized to your interests.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## How It Works
 
-## Deploy on Vercel
+Pick the topics you want to learn about → get personalized knowledge cards → build streaks that feel good.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The micro-learning approach means you're not committing to hour-long sessions. Just small, daily doses of knowledge that compound over time.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Questions help you think about what you read instead of just consuming content. It's learning that actually works with your schedule and attention span.
+
+---
+
+
+*Built this for myself, deployed to help others too*
